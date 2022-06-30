@@ -1,6 +1,21 @@
 cmake_minimum_required(VERSION 3.5)
 project(stage_ros2)
 
+# Default to C99
+if (NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif ()
+
+# Default to C++14
+if (NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif ()
+
+if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif ()
+
+# dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rcutils REQUIRED)
@@ -16,28 +31,30 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(stage REQUIRED)
-add_executable(stage_ros2 src/stage_ros2.cc)
+
 # build
+add_executable(stage_ros2 src/stage_ros2.cc)
 target_include_directories(stage_ros2
-    PRIVATE ${STAGE_INCLUDE_DIRS} include)
+		PRIVATE ${STAGE_INCLUDE_DIRS} include)
 target_link_libraries(stage_ros2
-    PRIVATE ${STAGE_LIBRARIES})
+		PRIVATE ${STAGE_LIBRARIES})
 ament_target_dependencies(stage_ros2
-    PUBLIC 
-    rclcpp
-    rcutils
-    cv_bridge
-    image_transport
-    geometry_msgs
-    nav_msgs
-    sensor_msgs
-    stage
-    std_msgs
-    std_srvs
-    tf2
-    tf2_ros
-    tf2_geometry_msgs)
+		PUBLIC
+		rclcpp
+		rcutils
+		cv_bridge
+		image_transport
+		geometry_msgs
+		nav_msgs
+		sensor_msgs
+		stage
+		std_msgs
+		std_srvs
+		tf2
+		tf2_ros
+		tf2_geometry_msgs)
+
 install(TARGETS stage_ros2
-    DESTINATION lib/${PROJECT_NAME})
+		DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
