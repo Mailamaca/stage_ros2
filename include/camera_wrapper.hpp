@@ -44,7 +44,7 @@ public:
         image_msg.data.resize(image_msg.step * image_msg.height);
         auto src = &(frame_color[(image_msg.height - 1) * image_msg.step]);
         auto dst = &(image_msg.data[0]);
-        for (int y = 0; y < image_msg.height; ++y, src -= image_msg.step, dst += image_msg.step) {
+        for (unsigned int y = 0; y < image_msg.height; ++y, src -= image_msg.step, dst += image_msg.step) {
             memcpy(dst, src, image_msg.step);
         }
         image_msg.header.frame_id = frame_id_;
@@ -74,7 +74,7 @@ public:
             auto depth_max = static_cast<float>(model_->getCamera().farClip());
             auto dst = reinterpret_cast<float*>(&(depth_msg.data)[0]);
             auto src = &(frame_depth[(depth_msg.height - 1) * depth_msg.width]);
-            for (int y = 0; y < depth_msg.height; ++y, src -= depth_msg.width, dst += depth_msg.width) {
+            for (unsigned int y = 0; y < depth_msg.height; ++y, src -= depth_msg.width, dst += depth_msg.width) {
                 for (size_t x = 0; x < depth_msg.width; ++x){
                     auto depth = src[x];
                     if (depth <= depth_min) {
@@ -92,7 +92,7 @@ public:
             auto depth_max = static_cast<uint16_t>(model_->getCamera().farClip() * 1000.f);
             auto dst = reinterpret_cast<uint16_t*>(&(depth_msg.data[0]));
             auto src = &(frame_depth[(depth_msg.height - 1) * depth_msg.width]);
-            for (int y = 0; y < depth_msg.height; ++y, src -= depth_msg.width, dst += depth_msg.width) {
+            for (unsigned int y = 0; y < depth_msg.height; ++y, src -= depth_msg.width, dst += depth_msg.width) {
                 for (size_t x = 0; x < depth_msg.width; ++x){
                     auto depth = static_cast<uint16_t>(src[x] * 1000.f);
                     if (depth <= depth_min || depth >= depth_max) {
