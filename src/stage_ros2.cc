@@ -17,7 +17,7 @@ public:
 
         node_ = rclcpp::Node::make_shared("stage_ros2");
         clock_pub_ = node_->create_publisher<rosgraph_msgs::msg::Clock>("/clock", rclcpp::QoS(rclcpp::KeepLast(10)).transient_local());
-        node_->declare_parameter("world");
+        node_->declare_parameter<std::string>("world");
         auto world_file = node_->get_parameter("world");
 
         executor_ = rclcpp::executors::SingleThreadedExecutor::make_shared();

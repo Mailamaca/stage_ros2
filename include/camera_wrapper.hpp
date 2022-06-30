@@ -23,9 +23,7 @@ public:
         camera_info_pub_ = node->create_publisher<sensor_msgs::msg::CameraInfo>(std::string("~/") + name + "/camera_info", 10);
         image_pub_ = node->create_publisher<sensor_msgs::msg::Image>(std::string("~/") + name + "/image_raw", 10);
         depth_pub_ = node->create_publisher<sensor_msgs::msg::Image>(std::string("~/") + name + "/depth", 10);
-        if (!node->has_parameter("is_depth_canonical")) {
-            node->declare_parameter("is_depth_canonical");
-        }
+        // TODO: verify that get_parameter_or really works
         node->get_parameter_or("is_depth_canonical", is_depth_canonical_, true);
     }
 
