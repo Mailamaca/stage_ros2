@@ -28,20 +28,25 @@ find_package(image_transport REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(stage REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+# We must use lowercase Stage as the argument for the find_package below.
+# Both works but they result in different variable being set `Stage_DIR` vs `stage_DIR`,
+# and variable names are case-sensitive. Stage's stage-config.cmake file incorrectly uses ${stage_DIR}.
 find_package(stage REQUIRED)
 
 # build
 add_executable(stage_ros2 src/stage_ros2.cc)
+# Add Stage dependency (the STAGE_* variables are defined by stage-config.cmake),
+# which was found by `find_package(stage REQUIRED)`.
 target_include_directories(stage_ros2
 		PRIVATE ${STAGE_INCLUDE_DIRS} include)
 target_link_libraries(stage_ros2
 		PRIVATE ${STAGE_LIBRARIES})
+# Add dependencies on standard ROS 2 packages using ament.
 ament_target_dependencies(stage_ros2
 		PUBLIC
 		rclcpp
@@ -51,7 +56,6 @@ ament_target_dependencies(stage_ros2
 		geometry_msgs
 		nav_msgs
 		sensor_msgs
-		stage
 		std_msgs
 		std_srvs
 		tf2

@@ -18,12 +18,17 @@
     <depend>geometry_msgs</depend>
     <depend>nav_msgs</depend>
     <depend>sensor_msgs</depend>
-    <depend>stage</depend>
     <depend>std_msgs</depend>
     <depend>std_srvs</depend>
     <depend>tf2</depend>
     <depend>tf2_ros</depend>
     <depend>tf2_geometry_msgs</depend>
+    <!--
+        colcon's build order resolution algorithm is case-sensitive when handling package names.
+        Because Stage is pure CMake project, colcon uses its project name (which is `Stage`)
+        as the package name. Thus using `<depend>Stage</depend>` would NOT work.
+    -->
+    <depend>Stage</depend>
 
     <export>
         <build_type>ament_cmake</build_type>
