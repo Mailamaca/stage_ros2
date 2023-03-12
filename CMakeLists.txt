@@ -1,23 +1,28 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 project(stage_ros2)
 
 # Default to C99
-if (NOT CMAKE_C_STANDARD)
+if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
-endif ()
+endif()
 
 # Default to C++14
-if (NOT CMAKE_CXX_STANDARD)
+set(CMAKE_CXX_STANDARD 14)
+if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
-endif ()
+endif()
 
-if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif ()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # About -Wno-sign-conversion: With Clang, -Wconversion implies -Wsign-conversion. There are a number of
+  # implicit sign conversions in rclcpp and gtest.cc, see https://ci.ros2.org/job/ci_osx/9265/.
+  # Hence disabling -Wsign-conversion for now until all those have eventually been fixed.
+  # (from https://github.com/ros2/rclcpp/pull/1188#issuecomment-650229140)
+  add_compile_options(-Wall -Wextra -Wconversion -Wno-sign-conversion -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
+endif()
 
-if ($ENV{ROS_DISTRO} STREQUAL "galactic" OR $ENV{ROS_DISTRO} STREQUAL "foxy")
+if($ENV{ROS_DISTRO} STREQUAL "galactic" OR $ENV{ROS_DISTRO} STREQUAL "foxy")
   add_compile_options(-DUSE_LEGACY_MSGS_INCLUDE)
-endif ()
+endif()
 
 # dependencies
 find_package(ament_cmake REQUIRED)
@@ -43,26 +48,27 @@ add_executable(stage_ros2 src/stage_ros2.cc)
 # Add Stage dependency (the STAGE_* variables are defined by stage-config.cmake),
 # which was found by `find_package(stage REQUIRED)`.
 target_include_directories(stage_ros2
-		PRIVATE ${STAGE_INCLUDE_DIRS} include)
+        PRIVATE ${STAGE_INCLUDE_DIRS} include)
 target_link_libraries(stage_ros2
-		PRIVATE ${STAGE_LIBRARIES})
+        PRIVATE ${STAGE_LIBRARIES})
 # Add dependencies on standard ROS 2 packages using ament.
 ament_target_dependencies(stage_ros2
-		PUBLIC
-		rclcpp
-		rcutils
-		cv_bridge
-		image_transport
-		geometry_msgs
-		nav_msgs
-		sensor_msgs
-		std_msgs
-		std_srvs
-		tf2
-		tf2_ros
-		tf2_geometry_msgs)
+        PUBLIC
+        rclcpp
+        rcutils
+        cv_bridge
+        image_transport
+        geometry_msgs
+        nav_msgs
+        sensor_msgs
+        std_msgs
+        std_srvs
+        tf2
+        tf2_ros
+        stage
+        tf2_geometry_msgs)
 
 install(TARGETS stage_ros2
-		DESTINATION lib/${PROJECT_NAME})
+        DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
