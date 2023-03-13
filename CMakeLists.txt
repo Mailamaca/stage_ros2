@@ -62,6 +62,12 @@ ament_target_dependencies(stage_ros2
 
 install(TARGETS stage_ros2
     DESTINATION lib/${PROJECT_NAME})
+install(DIRECTORY launch
+    DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY worlds
+        DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY stage
+    DESTINATION share/${PROJECT_NAME})
 
 #############
 ## Testing ##

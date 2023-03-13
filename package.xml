@@ -23,7 +23,7 @@
     <depend>tf2</depend>
     <depend>tf2_ros</depend>
     <depend>tf2_geometry_msgs</depend>
-    <depend>Stage</depend>
+    <depend>stage</depend>
 
     <exec_depend>ros2launch</exec_depend>
 
@@ -34,6 +34,7 @@
     <test_depend>ament_cmake_cppcheck</test_depend>
     <test_depend>ament_cmake_pycodestyle</test_depend>
     <test_depend>ament_cmake_lint_cmake</test_depend>
+    <test_depend>ament_cmake_pep257</test_depend>
 
     <export>
         <build_type>ament_cmake</build_type>

@@ -8,7 +8,6 @@
 #include "robot_wrapper.hpp"
 #include "rosgraph_msgs/msg/clock.hpp"
 #include "stage.hh"
-#include "world_gui.hh"
 
 class StageWrapper
 {
@@ -106,5 +105,12 @@ int main(int argc, char ** argv)
   StageWrapper stage_wrapper;
   stage_wrapper.init(argc, argv);
   Stg::World::Run();
+  int i = 1;
+  while(true){
+    i++;
+  }
+
+  rclcpp::shutdown();
+  std::cerr << "EXITTTT" << i << std::endl;
   return 0;
 }
