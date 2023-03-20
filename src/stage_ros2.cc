@@ -106,7 +106,7 @@ int main(int argc, char ** argv)
   stage_wrapper.init(argc, argv);
   Stg::World::Run();
   int i = 1;
-  while(true){
+  while (true) {
     i++;
   }
 

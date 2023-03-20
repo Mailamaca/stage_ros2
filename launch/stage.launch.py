@@ -4,13 +4,14 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node, SetParameter
 
+
 def generate_launch_description():
     default_world = PathJoinSubstitution([
-                    FindPackageShare('stage_ros2'),
-                    # 'stage',
-                    'worlds',
-                    'willow-erratic.world'
-                ])
+        FindPackageShare('stage_ros2'),
+        # 'stage',
+        'worlds',
+        'willow-erratic.world'
+    ])
 
     # Input parameters declaration
     namespace = LaunchConfiguration('namespace')
