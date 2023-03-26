@@ -10,7 +10,7 @@
 #include "position_wrapper.hpp"
 #include "ranger_wrapper.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "stage.hh"
+#include "stage/stage.hh"
 #include "tf2_ros/static_transform_broadcaster.h"
 #include "tf2_ros/transform_broadcaster.h"
 

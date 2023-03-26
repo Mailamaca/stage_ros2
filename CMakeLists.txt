@@ -39,13 +39,10 @@ find_package(stage REQUIRED)
 # build
 add_executable(stage_ros2 src/stage_ros2.cc)
 target_include_directories(stage_ros2
-    PRIVATE ${STAGE_INCLUDE_DIRS} include)
-target_link_libraries(stage_ros2
-    PRIVATE ${STAGE_LIBRARIES})
+    PRIVATE include)
 
 # Add dependencies on standard ROS 2 packages using ament.
-ament_target_dependencies(stage_ros2
-    PUBLIC
+set(dependencies
     rclcpp
     rcutils
     cv_bridge
@@ -58,7 +55,16 @@ ament_target_dependencies(stage_ros2
     tf2
     tf2_ros
     stage
-    tf2_geometry_msgs)
+    tf2_geometry_msgs
+)
+
+ament_target_dependencies(stage_ros2
+  ${dependencies}
+)
+
+ament_target_dependencies(stage_ros2
+  ${dependencies}
+)
 
 install(TARGETS stage_ros2
     DESTINATION lib/${PROJECT_NAME})
@@ -66,8 +72,6 @@ install(DIRECTORY launch
     DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY worlds
         DESTINATION share/${PROJECT_NAME})
-install(DIRECTORY stage
-    DESTINATION share/${PROJECT_NAME})
 
 #############
 ## Testing ##

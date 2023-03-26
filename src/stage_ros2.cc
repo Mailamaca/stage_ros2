@@ -7,7 +7,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "robot_wrapper.hpp"
 #include "rosgraph_msgs/msg/clock.hpp"
-#include "stage.hh"
+#include "stage/stage.hh"
 
 class StageWrapper
 {
