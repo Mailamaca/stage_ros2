@@ -37,7 +37,13 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(stage REQUIRED)
 
 # build
-add_executable(stage_ros2 src/stage_ros2.cc)
+add_executable(stage_ros2
+    src/stage_ros2.cc
+    src/stage_ros2/camera_wrapper.cpp
+    src/stage_ros2/position_wrapper.cpp
+    src/stage_ros2/ranger_wrapper.cpp
+    src/stage_ros2/robot_wrapper.cpp
+)
 target_include_directories(stage_ros2
     PRIVATE include)
 

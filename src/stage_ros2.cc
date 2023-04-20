@@ -1,13 +1,13 @@
-#include <camera_wrapper.hpp>
 #include <chrono>
 #include <memory>
 
-#include "position_wrapper.hpp"
-#include "ranger_wrapper.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "robot_wrapper.hpp"
 #include "rosgraph_msgs/msg/clock.hpp"
 #include "stage/stage.hh"
+#include "stage_ros2/camera_wrapper.hpp"
+#include "stage_ros2/position_wrapper.hpp"
+#include "stage_ros2/ranger_wrapper.hpp"
+#include "stage_ros2/robot_wrapper.hpp"
 
 class StageWrapper
 {
