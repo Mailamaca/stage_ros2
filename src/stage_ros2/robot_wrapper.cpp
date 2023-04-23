@@ -30,9 +30,21 @@ void replaceAll(std::string &str, const std::string &from,
 
 RobotWrapper::RobotWrapper(
     const rclcpp::executors::SingleThreadedExecutor::SharedPtr &executor,
-    std::string name) {
-  tf_prefix_ = name;
-  node_ = rclcpp::Node::make_shared(name, "stage_ros2");
+    const std::string &name)
+    : tf_prefix_(name) {
+  std::string ns{"stage_ros2"};
+
+  // The remapping here is an hack to remap the topic of the tf broadcaster.
+  // An alternative option could be to just instantiate a tf buffer publisher
+  // bypassing the TransformBroadcaster.
+  std::vector<std::string> remap_rules;
+  remap_rules.emplace_back("--ros-args");
+  remap_rules.emplace_back("-r");
+  remap_rules.emplace_back("/tf:=/" + name + "/tf");
+  remap_rules.emplace_back("-r");
+  remap_rules.emplace_back("/tf_static:=/" + name + "/tf_static");
+  auto options = rclcpp::NodeOptions().arguments(remap_rules);
+  node_ = rclcpp::Node::make_shared(name, ns, options);
   tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
   cmd_vel_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
       "~/cmd_vel", rclcpp::QoS(rclcpp::KeepLast(1)),

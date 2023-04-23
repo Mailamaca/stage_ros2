@@ -19,6 +19,8 @@ public:
     Stg::Init(&argc, &argv);
 
     node_ = rclcpp::Node::make_shared("stage_ros2");
+    auto context = node_->get_node_base_interface()->get_context();
+
     clock_pub_ = node_->create_publisher<rosgraph_msgs::msg::Clock>(
       "/clock", rclcpp::QoS(rclcpp::KeepLast(10)).transient_local());
     node_->declare_parameter<bool>("gui");

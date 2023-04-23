@@ -17,7 +17,7 @@ class RobotWrapper {
 public:
   RobotWrapper(
       const rclcpp::executors::SingleThreadedExecutor::SharedPtr &executor,
-      std::string name);
+      const std::string &name);
   void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
   void publish(const rclcpp::Time &now);
 
