@@ -9,34 +9,28 @@
 #include "sensor_msgs/msg/camera_info.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include "stage/stage.hh"
+#include "stage_ros2/transform_broadcaster.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
-#include "tf2_ros/transform_broadcaster.h"
 
 CameraWrapper::CameraWrapper(const rclcpp::Node::SharedPtr &node,
-                             Stg::ModelCamera *model, const std::string &name,
-                             const std::string &tf_prefix)
-    : model_(model) {
-  parent_frame_id_ = "base_link";
-  if (tf_prefix.size() > 0) {
-    parent_frame_id_ = tf_prefix + "/" + parent_frame_id_;
-  }
-  frame_id_ = name + "/base_camera";
-  if (tf_prefix.size() > 0) {
-    frame_id_ = tf_prefix + "/" + frame_id_;
-  }
+                             Stg::ModelCamera *model,
+                             std::string parent_frame_id, std::string frame_id,
+                             const std::string &topic)
+    : model_(model), parent_frame_id_(std::move(parent_frame_id)),
+      frame_id_(std::move(frame_id)) {
   camera_info_pub_ = node->create_publisher<sensor_msgs::msg::CameraInfo>(
-      std::string("~/") + name + "/camera_info", 10);
+      std::string("~/") + topic + "/camera_info", 10);
   image_pub_ = node->create_publisher<sensor_msgs::msg::Image>(
-      std::string("~/") + name + "/image_raw", 10);
+      std::string("~/") + topic + "/image_raw", 10);
   depth_pub_ = node->create_publisher<sensor_msgs::msg::Image>(
-      std::string("~/") + name + "/depth", 10);
+      std::string("~/") + topic + "/depth", 10);
   // TODO(pokusew): verify that get_parameter_or really works
   node->get_parameter_or("is_depth_canonical", is_depth_canonical_, true);
 }
 
 void CameraWrapper::publish(
-    const std::shared_ptr<tf2_ros::TransformBroadcaster> &tf_broadcaster,
+    const std::shared_ptr<TransformBroadcaster> &tf_broadcaster,
     const rclcpp::Time &now) {
   publish_image(now);
   publish_depth(now);
@@ -155,7 +149,7 @@ void CameraWrapper::publich_camera_info(const rclcpp::Time &now) {
 }
 
 void CameraWrapper::publish_tf(
-    const std::shared_ptr<tf2_ros::TransformBroadcaster> &tf_broadcaster,
+    const std::shared_ptr<TransformBroadcaster> &tf_broadcaster,
     const rclcpp::Time &now) {
   Stg::Pose p = model_->GetPose();
   tf2::Quaternion q;

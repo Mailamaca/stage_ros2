@@ -46,8 +46,8 @@ def generate_launch_description():
         output='screen',
         respawn=True,
         namespace=namespace,
-        # name='stage',
-        arguments=['--ros-args', '--log-level', 'debug'],
+        # NOTE: do not specify a node name, because this will break the logic of stage_ros2.
+        arguments=['--ros-args', '--log-level', log_level],
         parameters=[{
                 "world": world_file,
                 "gui": True,

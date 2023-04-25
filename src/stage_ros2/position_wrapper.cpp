@@ -6,15 +6,13 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "stage/stage.hh"
+#include "stage_ros2/transform_broadcaster.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
-#include "tf2_ros/transform_broadcaster.h"
 
 PositionWrapper::PositionWrapper(const rclcpp::Node::SharedPtr &node,
-                                 Stg::ModelPosition *model,
-                                 const std::string &tf_prefix)
+                                 Stg::ModelPosition *model)
     : model_(model) {
-  tf_prefix_ = tf_prefix;
   odom_pub_ = node->create_publisher<nav_msgs::msg::Odometry>("~/odom", 10);
   ground_truth_pub_ =
       node->create_publisher<nav_msgs::msg::Odometry>("~/ground_truth", 10);
@@ -25,14 +23,10 @@ void PositionWrapper::set_speed(double vx, double vy, double avz) {
 }
 
 void PositionWrapper::publish(
-    const std::shared_ptr<tf2_ros::TransformBroadcaster> &tf_broadcaster,
+    const std::shared_ptr<TransformBroadcaster> &tf_broadcaster,
     const rclcpp::Time &now) {
   std::string frame_id = "odom";
   std::string child_frame_id = "base_footprint";
-  if (tf_prefix_.size() > 0) {
-    frame_id = tf_prefix_ + "/" + frame_id;
-    child_frame_id = tf_prefix_ + "/" + child_frame_id;
-  }
 
   nav_msgs::msg::Odometry odom_msg;
   odom_msg.pose.pose.position.x = model_->est_pose.x;

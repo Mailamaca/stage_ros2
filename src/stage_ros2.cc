@@ -46,13 +46,13 @@ public:
       },
       this);
     world_->Start();
-    ros2_thread_ = std::make_shared<std::thread>([this]() { executor_->spin(); });
   }
+
+  void spin() { executor_->spin(); }
 
   ~StageWrapper() { rclcpp::shutdown(); }
 
 private:
-  std::shared_ptr<std::thread> ros2_thread_;
   rclcpp::Node::SharedPtr node_;
   rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_;
   rclcpp::Publisher<rosgraph_msgs::msg::Clock>::SharedPtr clock_pub_;
@@ -65,7 +65,8 @@ private:
       node_->get_logger(),
       "[search robots] token: " << mod->Token() << ", type: " << mod->GetModelType());
     if (mod->GetModelType() == "position") {
-      robots_[mod] = std::make_shared<RobotWrapper>(executor_, mod->Token());
+      robots_[mod] =
+          std::make_shared<RobotWrapper>(executor_, std::string(mod->Token()));
       robots_[mod]->wrap(mod);
       mod->ForEachDescendant(
         [](Stg::Model * mod, void * user) {
@@ -107,12 +108,7 @@ int main(int argc, char ** argv)
   StageWrapper stage_wrapper;
   stage_wrapper.init(argc, argv);
   Stg::World::Run();
-  int i = 1;
-  while (true) {
-    i++;
-  }
-
+  stage_wrapper.spin();
   rclcpp::shutdown();
-  std::cerr << "EXITTTT" << i << std::endl;
   return 0;
 }

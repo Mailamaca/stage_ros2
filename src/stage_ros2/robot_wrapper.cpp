@@ -11,8 +11,8 @@
 #include "stage_ros2/camera_wrapper.hpp"
 #include "stage_ros2/position_wrapper.hpp"
 #include "stage_ros2/ranger_wrapper.hpp"
+#include "stage_ros2/transform_broadcaster.hpp"
 #include "tf2_ros/static_transform_broadcaster.h"
-#include "tf2_ros/transform_broadcaster.h"
 
 namespace {
 void replaceAll(std::string &str, const std::string &from,
@@ -30,22 +30,10 @@ void replaceAll(std::string &str, const std::string &from,
 
 RobotWrapper::RobotWrapper(
     const rclcpp::executors::SingleThreadedExecutor::SharedPtr &executor,
-    const std::string &name)
-    : tf_prefix_(name) {
+    const std::string &name) {
   std::string ns{"stage_ros2"};
-
-  // The remapping here is an hack to remap the topic of the tf broadcaster.
-  // An alternative option could be to just instantiate a tf buffer publisher
-  // bypassing the TransformBroadcaster.
-  std::vector<std::string> remap_rules;
-  remap_rules.emplace_back("--ros-args");
-  remap_rules.emplace_back("-r");
-  remap_rules.emplace_back("/tf:=/" + name + "/tf");
-  remap_rules.emplace_back("-r");
-  remap_rules.emplace_back("/tf_static:=/" + name + "/tf_static");
-  auto options = rclcpp::NodeOptions().arguments(remap_rules);
-  node_ = rclcpp::Node::make_shared(name, ns, options);
-  tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
+  node_ = rclcpp::Node::make_shared(name, ns);
+  tf_broadcaster_ = std::make_shared<TransformBroadcaster>(node_);
   cmd_vel_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
       "~/cmd_vel", rclcpp::QoS(rclcpp::KeepLast(1)),
       std::bind(&RobotWrapper::cmd_vel_callback, this, std::placeholders::_1));
@@ -62,10 +50,6 @@ void RobotWrapper::publish(const rclcpp::Time &now) {
   geometry_msgs::msg::TransformStamped transform;
   std::string frame_id = "base_footprint";
   std::string child_frame_id = "base_link";
-  if (tf_prefix_.size() > 0) {
-    frame_id = tf_prefix_ + "/" + frame_id;
-    child_frame_id = tf_prefix_ + "/" + child_frame_id;
-  }
   transform.header.frame_id = frame_id;
   transform.header.stamp = now;
   transform.child_frame_id = child_frame_id;
@@ -87,27 +71,30 @@ void RobotWrapper::wrap(Stg::Model *mod) {
   if (mod->GetModelType() == "position") {
     mod->Subscribe();
     position_ = std::make_shared<PositionWrapper>(
-        node_, static_cast<Stg::ModelPosition *>(mod), tf_prefix_);
+        node_, static_cast<Stg::ModelPosition *>(mod));
   } else {
     // token -> model_name
     std::string model_name = mod->Token();
-    auto pos_dot = model_name.find(".");
+    auto pos_dot = model_name.find('.');
     if (pos_dot != std::string::npos) {
       model_name = model_name.substr(pos_dot + 1);
     }
     replaceAll(model_name, ":", "_");
 
-    if (mod->GetModelType() == "ranger") {
+    const std::string model_type = mod->GetModelType();
+    if (model_type == "ranger") {
       mod->Subscribe();
       rangers_.push_back(std::make_shared<RangerWrapper>(
-          node_, static_cast<Stg::ModelRanger *>(mod), model_name, tf_prefix_));
-    } else if (mod->GetModelType() == "camera") {
+          node_, static_cast<Stg::ModelRanger *>(mod), "base_link", model_name,
+          model_name));
+    } else if (model_type == "camera") {
       mod->Subscribe();
       cameras_.push_back(std::make_shared<CameraWrapper>(
-          node_, static_cast<Stg::ModelCamera *>(mod), model_name, tf_prefix_));
+          node_, static_cast<Stg::ModelCamera *>(mod), "base_link", model_name,
+          model_name));
     } else {
-      RCLCPP_WARN_STREAM(node_->get_logger(), "sensor " << mod->GetModelType()
-                                                        << "is not supported");
+      RCLCPP_WARN_STREAM(node_->get_logger(),
+                         "sensor " << model_type << "is not supported");
     }
   }
 }

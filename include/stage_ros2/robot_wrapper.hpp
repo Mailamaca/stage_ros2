@@ -10,8 +10,8 @@
 #include "stage_ros2/camera_wrapper.hpp"
 #include "stage_ros2/position_wrapper.hpp"
 #include "stage_ros2/ranger_wrapper.hpp"
+#include "stage_ros2/transform_broadcaster.hpp"
 #include "tf2_ros/static_transform_broadcaster.h"
-#include "tf2_ros/transform_broadcaster.h"
 
 class RobotWrapper {
 public:
@@ -26,8 +26,7 @@ public:
 private:
   std::mutex mtx_;
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-  std::string tf_prefix_;
+  std::shared_ptr<TransformBroadcaster> tf_broadcaster_;
   std::shared_ptr<PositionWrapper> position_;
   std::vector<std::shared_ptr<CameraWrapper>> cameras_;
   std::vector<std::shared_ptr<RangerWrapper>> rangers_;

@@ -43,6 +43,7 @@ add_executable(stage_ros2
     src/stage_ros2/position_wrapper.cpp
     src/stage_ros2/ranger_wrapper.cpp
     src/stage_ros2/robot_wrapper.cpp
+    src/stage_ros2/transform_broadcaster.cpp
 )
 target_include_directories(stage_ros2
     PRIVATE include)
